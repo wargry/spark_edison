@@ -1,0 +1,68 @@
+Entidades
+
+- Nodo - Id, latitud, longitud 
+- Lecturas - (nodo_id (int), fecha (datetime)), lectura(float), tipo_lectura (int)
+- Tipo lectura - Id (int), tipo (text), unidad (text) 
+- Alerta, id, fecha, nodo_id, 
+
+CREATE TABLE nodo (id int NOT NULL AUTO_INCREMENT, latitud VARCHAR(20), longitud VARCHAR(20), primary key(id));
+
+CREATE TABLE meas (node_id int, date DATETIME, mea FLOAT, type_mea int, primary key (node_id, date), FOREIGN KEY (node_id) REFERENCES nodes(id));
+
+CREATE TABLE meas_type (id INT NOT NULL AUTO_INCREMENT, type VARCHAR(20), unit VARCHAR(20), PRIMARY KEY (id))
+
+CREATE TABLE alerts (id INT NOT NULL AUTO_INCREMENT, date DATETIME, node_id INT, PRIMARY KEY (id), FOREIGN KEY (node_id) REFERENCES nodes(id));
+
+mysql> show tables;
++------------------+
+| Tables_in_edison |
++------------------+
+| alerts           |
+| meas             |
+| meas_type        |
+| nodes            |
++------------------+
+
+describe alerts
++---------+----------+------+-----+---------+----------------+
+| Field   | Type     | Null | Key | Default | Extra          |
++---------+----------+------+-----+---------+----------------+
+| id      | int(11)  | NO   | PRI | NULL    | auto_increment |
+| date    | datetime | YES  |     | NULL    |                |
+| node_id | int(11)  | YES  | MUL | NULL    |                |
++---------+----------+------+-----+---------+----------------+
+3 rows in set (0.00 sec)
+
+
+mysql> describe meas;
++----------+----------+------+-----+---------------------+-------+
+| Field    | Type     | Null | Key | Default             | Extra |
++----------+----------+------+-----+---------------------+-------+
+| node_id  | int(11)  | NO   | PRI | 0                   |       |
+| date     | datetime | NO   | PRI | 0000-00-00 00:00:00 |       |
+| mea      | float    | YES  |     | NULL                |       |
+| type_mea | int(11)  | YES  |     | NULL                |       |
++----------+----------+------+-----+---------------------+-------+
+
+
+mysql> describe meas_type;
++-------+-------------+------+-----+---------+----------------+
+| Field | Type        | Null | Key | Default | Extra          |
++-------+-------------+------+-----+---------+----------------+
+| id    | int(11)     | NO   | PRI | NULL    | auto_increment |
+| type  | varchar(20) | YES  |     | NULL    |                |
+| unit  | varchar(20) | YES  |     | NULL    |                |
++-------+-------------+------+-----+---------+----------------+
+3 rows in set (0.01 sec)
+
+
+mysql> describe nodes;
++----------+-------------+------+-----+---------+----------------+
+| Field    | Type        | Null | Key | Default | Extra          |
++----------+-------------+------+-----+---------+----------------+
+| id       | int(11)     | NO   | PRI | NULL    | auto_increment |
+| latitud  | varchar(20) | YES  |     | NULL    |                |
+| longitud | varchar(20) | YES  |     | NULL    |                |
++----------+-------------+------+-----+---------+----------------+
+3 rows in set (0.00 sec)
+
