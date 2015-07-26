@@ -6,6 +6,7 @@ email : floodsgdl@gmail.com
 
 '''
 
+import random
 import twitter
 from gmaps import Geocoding
 
@@ -20,29 +21,59 @@ def tweet(message):
     status = twitter_api.PostUpdate(message)
 
 def get_place(Lat, Lon):
-    #print(gmaps_api.reverse(Lat, Lon))
     query = gmaps_api.reverse(Lat, Lon)
-
-    #print (query[0]['address_components'][1]['long_name'])
     if not query:
        return 'somewhere'
     for component in query[0]['address_components']:
        if 'route' in component['types'] :
             return component['long_name']
-         
+
+
+def get_street(Lat, Lon):
+    query = gmaps_api.reverse(Lat, Lon)
+    if not query:
+        return 'some street'
+    for item in query:
+	if 'street_address' in item['types']:
+            return item['formatted_address']
+
+def get_location(Lat, Lon):
+    query = gmaps_api.reverse(Lat, Lon)
+    if not query:
+        return 'some place'
+    for item in query:
+        if 'sublocality_level_1' in item['types']:
+            return item['formatted_address']
+             
 '''
 # example
 tweet('Floods GDL, Hello everyone!')
 '''
 
-def tweet_location(message, lat, lon):
+def tweet_alert(alert, lat, lon):
+    alerts = [
+        tweet_place,
+        tweet_street,
+        tweet_location
+    ]
+    random.choice(alerts)(alert, lat, lon)
+
+def tweet_place(alert, lat, lon):
     '''
-    This function post a message using the lat and long and converts to place
+    This function post an alert using the lat and long and converts to place
     '''
-    tweet("{0} at {1}".format(message, get_place(lat, lon)))
+    tweet("{0} at {1}".format(alert, get_place(lat, lon)))
+
+def tweet_street(alert, lat, lon):
+    tweet("{0} in {1}".format(alert, get_street(lat,lon)))
+
+def tweet_location(alert, lat, lon):
+    tweet("{0}, {1}".format(alert, get_location(lat,lon)))
 
 lat = 20.649470
 lon = -103.402698
 
-# print (get_place(lat,lon))
-tweet_location("Flood detection", lat, lon)
+#print (get_place(lat,lon))
+#print (get_street(lat,lon))
+#print (get_location(lat,lon))
+tweet_alert("Possible flood", lat, lon)
