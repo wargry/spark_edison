@@ -75,11 +75,12 @@ class Ultrasonic(Sensor) :
         self.trigger_pin.dir(mraa.DIR_OUT)
     def __init__(self, type = 'ultrasonic' , unit = 'cm' , conv_ratio = 58.2 ,
                  file = 'ultrasonic', timeint = 0.5, status = 1, echo_pin = 6,
-                 trigger_pin = 5, max_range = 400, min_range = 0):
+                 trigger_pin = 5, max_range = 400, min_range = 0, initial_value=46.5):
         Sensor.__init__(self, type,unit,conv_ratio,file,timeint, status)
         self.__init__gpio(echo_pin, trigger_pin)
         self.max_range = max_range
         self.min_range = min_range
+        self.initial_value = initial_value
     def thread(self, args):
         while True: 
             self.trigger_pin.write(0)
@@ -88,7 +89,7 @@ class Ultrasonic(Sensor) :
             time.sleep(0.00001)  #10 microseconds
             self.trigger_pin.write(0)
             duration  = pulsein.pulseIn(self.echo_pin) # microseconds 
-            ultrasonic_value.value = duration / self.conv_ratio # distance
+            ultrasonic_value.value = self.initial_value - (duration / self.conv_ratio) # distance
             if ultrasonic_value.value >= self.max_range or \
                 ultrasonic_value.value <= self.min_range :
                 print "Out of range {0}".format(ultrasonic_value.value)
